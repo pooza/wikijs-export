@@ -9,7 +9,7 @@ const destDir = './htmls';
 if (!fs.existsSync(destDir)) fs.mkdirSync(destDir);
 
 function replaceLinks(markdownText) {
-  return markdownText.replace(/\[([^\]]+)]\((\/[^\)]+)\)/g, (_, text, link) => {
+  return markdownText.replace(/\[([^\]]+)]\((\/[^)]+)\)/g, (_, text, link) => {
     const htmlPath = link.replace(/^\//, '').replace(/\//g, '_') + '.html';
     return `[${text}](${htmlPath})`;
   });
@@ -18,7 +18,7 @@ function replaceLinks(markdownText) {
 glob(`${sourceDir}/**/*.md`, (err, files) => {
   if (err) throw err;
 
-  files.forEach(file => {
+  files.forEach((file) => {
     const md = fs.readFileSync(file, 'utf-8');
     const updatedMd = replaceLinks(md);
     const htmlContent = markdown.render(updatedMd);
@@ -29,14 +29,19 @@ glob(`${sourceDir}/**/*.md`, (err, files) => {
 
     const breadcrumbs = {};
     const docpath = [];
-    relPath.replace(/\.md/, '').split('/').map((part) => {
-      docpath.push(part);
-      breadcrumbs[part] = `${docpath.join('_')}.html`;
-    });
-    const breadcrumbLinks = Object.keys(breadcrumbs).map((k) => {
-      const v = breadcrumbs[k];
-      return `<a href="${v}">${k}</a>`;
-    }).join(' / ');
+    relPath
+      .replace(/\.md/, '')
+      .split('/')
+      .map((part) => {
+        docpath.push(part);
+        breadcrumbs[part] = `${docpath.join('_')}.html`;
+      });
+    const breadcrumbLinks = Object.keys(breadcrumbs)
+      .map((k) => {
+        const v = breadcrumbs[k];
+        return `<a href="${v}">${k}</a>`;
+      })
+      .join(' / ');
 
     let htmlPage = `
 <!DOCTYPE html>
